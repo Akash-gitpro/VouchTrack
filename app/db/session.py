@@ -1,20 +1,17 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # --- DATABASE CONFIGURATION ---
 
-# OLD SQLITE (Idhai ippo enable pannirukkom - Local testing-kaga)
-SQLALCHEMY_DATABASE_URL = "sqlite:///./vouchtrack.db"
-
-# NEW POSTGRESQL (Idhai temporary-ah comment pannittom - AWS setup appo use pannuvom)
-# SQLALCHEMY_DATABASE_URL = "postgresql://postgres:password@localhost:5432/vouchtrack_db"
+# PostgreSQL URL Format (Placeholders vatchurukkaen)
+# Namma RDS Endpoint kidaichathum 'YOUR_PASSWORD' and 'YOUR_RDS_ENDPOINT' replace pannuvom.
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:YOUR_PASSWORD@YOUR_RDS_ENDPOINT:5432/postgres"
 
 # Engine create panrom. 
-# Note: SQLite use pannumbodhu mattum 'connect_args' venum.
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# Note: PostgreSQL-ku 'connect_args' thevaiyillai, so adhai remove pannittom.
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
