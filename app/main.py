@@ -12,7 +12,7 @@ app = FastAPI(title="VouchTrack - Microsoft Lab Management")
 # --- 2. CORS SETTINGS (Frontend connection-ku idhu dhaan hero) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # React run aagura port
+    allow_origins=["http://localhost:3000","https://mcsoft.vercel.app"], # React run aagura port
     allow_credentials=True,
     allow_methods=["*"], # GET, POST, PATCH, DELETE ellathaiyum allow pannuvom
     allow_headers=["*"], # Authentication tokens-ah allow panna
