@@ -1,50 +1,44 @@
-import sqlite3
+import sys
+import os
 from datetime import datetime
 
-# Database connection
-conn = sqlite3.connect('vouchtrack.db')
-cursor = conn.cursor()
+# Path set panrom
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-print("🌱 Seeding data into VouchTrack...")
+from app.db.session import SessionLocal
+from app.db.models import User
 
-# 1. Create Dummy Students (10 members)
-# Note: Password hash logic illama direct-ah "password123" nu dummy-ah podurom testing-kaga
-students = [
-    ('Akash M', 'akash@admin.com', 'admin_hash', 'admin'),
-    ('Vijay', 'vijay@student.com', 'pwd_hash', 'student'),
-    ('Suriya', 'suriya@student.com', 'pwd_hash', 'student'),
-    ('Ajith', 'ajith@student.com', 'pwd_hash', 'student'),
-    ('Vikram', 'vikram@student.com', 'pwd_hash', 'student'),
-    ('Dhanush', 'dhanush@student.com', 'pwd_hash', 'student'),
-    ('Simbu', 'simbu@student.com', 'pwd_hash', 'student'),
-    ('Sivakarthikeyan', 'sk@student.com', 'pwd_hash', 'student'),
-    ('Karthi', 'karthi@student.com', 'pwd_hash', 'student'),
-    ('Jayam Ravi', 'ravi@student.com', 'pwd_hash', 'student')
-]
+def seed_data():
+    db = SessionLocal()
+    print("🚀 Preparing Database for Production Handover...")
 
-cursor.executemany("INSERT OR IGNORE INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)", students)
+    try:
+        # 1. Setup Initial Admin ONLY
+        # Inga unga real admin email-ah matum add panrom
+        admin_email = "microsoftadmin7@karunya.edu.in"
+        
+        exists = db.query(User).filter(User.email == admin_email).first()
+        
+        if not exists:
+            new_admin = User(
+                name='System Admin', 
+                email=admin_email, 
+                password_hash='admin_login_required', # Real hash login apo create aagum
+                role='admin'
+            )
+            db.add(new_admin)
+            print(f"✅ Admin account ({admin_email}) configured.")
+        else:
+            print("ℹ️ Admin already exists. No changes made.")
 
-# 2. Create Dummy Vouchers (15 vouchers)
-vouchers = [
-    (f"MS-AZ900-{i:03d}", "AZ-900 Microsoft Azure Fundamentals", 0) for i in range(1, 11)
-] + [
-    (f"MS-AI900-{i:03d}", "AI-900 Azure AI Fundamentals", 0) for i in range(11, 16)
-]
+        db.commit()
+        print("✨ Database is now ready for Admin to upload real vouchers!")
+        
+    except Exception as e:
+        print(f"❌ Error during seeding: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
-cursor.executemany("INSERT OR IGNORE INTO vouchers (voucher_code, course_name, is_used) VALUES (?, ?, ?)", vouchers)
-
-# 3. Create some Sample Assignments (Assigning 3 students)
-# Ippo student IDs 2, 3, 4-ku vouchers assign panrom
-assignments = [
-    (2, 1, 1, 'pass', datetime.now()),  # Student 2, Voucher 1, Visible=True, Status=Pass
-    (3, 2, 0, 'pending', datetime.now()), # Student 3, Voucher 2, Visible=False, Status=Pending
-    (4, 3, 1, 'fail', datetime.now())    # Student 4, Voucher 3, Visible=True, Status=Fail
-]
-
-cursor.executemany("INSERT OR IGNORE INTO assignments (student_id, voucher_id, is_visible, exam_status, assigned_at) VALUES (?, ?, ?, ?, ?)", assignments)
-
-conn.commit()
-conn.close()
-
-print("✅ Success! 10 Students, 15 Vouchers, and 3 Assignments added.")
-print("🚀 Ippo '/vouchers/report/daily' check panni paarunga, data neat-ah varum!")
+if __name__ == "__main__":
+    seed_data()
