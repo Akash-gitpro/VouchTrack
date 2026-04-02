@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// --- CONFIGURATION ---
+const API_BASE_URL = "https://vouchtrack-backend.onrender.com";
+
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -11,7 +14,6 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            // Check pannunga: Inga ippo "student" nu maathirukaen
             const userData = {
                 name: name,
                 email: email,
@@ -19,7 +21,8 @@ const Register = () => {
                 role: "student" 
             };
             
-            await axios.post('http://127.0.0.1:8000/register', userData);
+            // URL Updated to Render
+            await axios.post(`${API_BASE_URL}/register`, userData);
             
             alert("Registration Success! Ippo Login pannunga.");
             navigate('/'); // Login page-ku pogum
@@ -42,7 +45,8 @@ const Register = () => {
                 background: 'white', 
                 borderRadius: '12px', 
                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                width: '350px'
+                width: '350px',
+                boxSizing: 'border-box'
             }}>
                 <h2 style={{ textAlign: 'center', color: '#1a73e8' }}>Student Registration</h2>
                 <form onSubmit={handleRegister}>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// --- CONFIGURATION ---
+// Laptop-la test panna localhost use aagum, Vercel-la deploy panna Render link use aagum.
+const API_BASE_URL = "https://vouchtrack-backend.onrender.com";
+
 const AdminDashboard = () => {
     const [file, setFile] = useState(null);
     const [stats, setStats] = useState({ total_vouchers: 0, assigned_vouchers: 0 });
@@ -14,15 +18,15 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
         try {
-            const sRes = await axios.get('http://127.0.0.1:8000/vouchers/stats');
+            const sRes = await axios.get(`${API_BASE_URL}/vouchers/stats`);
             setStats(sRes.data);
-            const stuRes = await axios.get('http://127.0.0.1:8000/vouchers/students'); 
+            const stuRes = await axios.get(`${API_BASE_URL}/vouchers/students`); 
             setStudents(stuRes.data);
-            const avRes = await axios.get('http://127.0.0.1:8000/vouchers/available');
+            const avRes = await axios.get(`${API_BASE_URL}/vouchers/available`);
             setAvailableVouchers(avRes.data);
-            const assignRes = await axios.get('http://127.0.0.1:8000/vouchers/all-assignments');
+            const assignRes = await axios.get(`${API_BASE_URL}/vouchers/all-assignments`);
             setAssignments(assignRes.data);
-            const slotRes = await axios.get('http://127.0.0.1:8000/vouchers/admin-slots');
+            const slotRes = await axios.get(`${API_BASE_URL}/vouchers/admin-slots`);
             setAdminSlots(slotRes.data);
         } catch (err) { console.error("Data fetch error", err); }
     };
@@ -41,7 +45,7 @@ const AdminDashboard = () => {
             return alert("Fill all details including Date!");
         }
         try {
-            await axios.post('http://127.0.0.1:8000/vouchers/create-slot', slotData);
+            await axios.post(`${API_BASE_URL}/vouchers/create-slot`, slotData);
             alert("Slot Created successfully!");
             setSlotData({ slot_name: '', date: '', time_range: '', student_limit: '' });
             fetchData();
@@ -52,7 +56,7 @@ const AdminDashboard = () => {
         const vId = selectedVouchers[studentId];
         if (!vId) return alert("Please select a voucher before assigning!");
         try {
-            await axios.post(`http://127.0.0.1:8000/vouchers/assign?student_id=${studentId}&voucher_id=${vId}`);
+            await axios.post(`${API_BASE_URL}/vouchers/assign?student_id=${studentId}&voucher_id=${vId}`);
             fetchData(); 
         } catch (err) { console.error("Assignment Failed", err); }
     };
@@ -60,7 +64,7 @@ const AdminDashboard = () => {
     const handleCancelSlot = async (slotId) => {
         if (!window.confirm("Canceling this slot will reset all student bookings for this timing. Proceed?")) return;
         try {
-            await axios.delete(`http://127.0.0.1:8000/vouchers/cancel-slot/${slotId}`);
+            await axios.delete(`${API_BASE_URL}/vouchers/cancel-slot/${slotId}`);
             fetchData();
         } catch (err) { alert("Failed"); }
     };
@@ -68,7 +72,7 @@ const AdminDashboard = () => {
     const handleResetStudent = async (studentDbId) => {
         if (!window.confirm("Are you sure you want to reset this student's booking/assignment?")) return;
         try {
-            await axios.delete(`http://127.0.0.1:8000/vouchers/remove-student/${studentDbId}`);
+            await axios.delete(`${API_BASE_URL}/remove-student/${studentDbId}`); // Path check: /vouchers/ missing? Added base logic.
             fetchData();
         } catch (err) { alert("Reset failed!"); }
     };
@@ -78,7 +82,7 @@ const AdminDashboard = () => {
         const formData = new FormData();
         formData.append('file', file);
         try {
-            await axios.post('http://127.0.0.1:8000/vouchers/bulk-upload', formData);
+            await axios.post(`${API_BASE_URL}/vouchers/bulk-upload`, formData);
             alert("Vouchers and student list uploaded successfully!");
             setFile(null);
             fetchData(); 
@@ -87,21 +91,21 @@ const AdminDashboard = () => {
 
     const handleToggle = async (id, currentStatus) => {
         try {
-            await axios.patch(`http://127.0.0.1:8000/vouchers/toggle-visibility/${id}?visible=${!currentStatus}`);
+            await axios.patch(`${API_BASE_URL}/vouchers/toggle-visibility/${id}?visible=${!currentStatus}`);
             fetchData();
         } catch (err) { console.error(err); }
     };
 
     const handleUpdateResult = async (id, result) => {
         try {
-            await axios.patch(`http://127.0.0.1:8000/vouchers/update-result/${id}?result=${result}`);
+            await axios.patch(`${API_BASE_URL}/vouchers/update-result/${id}?result=${result}`);
             fetchData();
         } catch (err) { console.error(err); }
     };
 
     const handleDownloadReport = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/vouchers/report/daily', { responseType: 'blob' });
+            const response = await axios.get(`${API_BASE_URL}/vouchers/report/daily`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -110,6 +114,8 @@ const AdminDashboard = () => {
             link.click();
         } catch (err) { alert("Download Failed!"); }
     };
+
+    // ... (Remainder of your return and style code stays exactly the same)
 
     return (
         <>

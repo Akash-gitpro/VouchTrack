@@ -4,6 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// --- CONFIGURATION ---
+const API_BASE_URL = "https://vouchtrack-backend.onrender.com";
+
 const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -22,13 +25,11 @@ const Login = () => {
                 return;
             }
 
-            // Backend Login Call
-            const response = await axios.post('http://127.0.0.1:8000/google-login', {
+            // Backend Login Call - URL Updated to Render
+            const response = await axios.post(`${API_BASE_URL}/google-login`, {
                 token: credentialResponse.credential
             });
 
-            // Inga needs_registration check-ah thookittaen, 
-            // yename details ellam Slot Booking appo dhaan update aagum.
             const { access_token, role } = response.data;
 
             localStorage.setItem('token', access_token);
@@ -44,7 +45,8 @@ const Login = () => {
 
         } catch (err) {
             console.error(err);
-            setError('Login Failed! Backend connection error.');
+            // Inga error message-ah konjam clear-ah kuduthurukkaen
+            setError('Login Failed! Check your internet or Backend connectivity.');
         }
     };
 
@@ -89,7 +91,8 @@ const loginBoxStyle = {
     borderRadius: '16px',
     boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
     textAlign: 'center',
-    width: '380px'
+    width: '380px',
+    boxSizing: 'border-box'
 };
 
 export default Login;

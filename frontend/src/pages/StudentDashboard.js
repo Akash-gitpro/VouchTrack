@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
+// --- CONFIGURATION ---
+const API_BASE_URL = "https://vouchtrack-backend.onrender.com";
+
 const StudentDashboard = () => {
     // --- STATES (Logic Remains Unchanged) ---
     const [myVouchers, setMyVouchers] = useState([]);
@@ -14,7 +17,8 @@ const StudentDashboard = () => {
 
     const fetchData = useCallback(async () => {
         try {
-            const vRes = await axios.get(`http://127.0.0.1:8000/vouchers/my-vouchers?email=${userEmail}`);
+            // URL Updated to Render
+            const vRes = await axios.get(`${API_BASE_URL}/vouchers/my-vouchers?email=${userEmail}`);
             
             if (vRes.data.length > 0 && vRes.data[0].booked_slot_name) {
                 setBookedSlotName(vRes.data[0].booked_slot_name);
@@ -24,7 +28,8 @@ const StudentDashboard = () => {
                 setMyVouchers([]);
             }
 
-            const sRes = await axios.get('http://127.0.0.1:8000/vouchers/slots');
+            // URL Updated to Render
+            const sRes = await axios.get(`${API_BASE_URL}/vouchers/slots`);
             setSlots(sRes.data);
 
         } catch (err) {
@@ -50,7 +55,8 @@ const StudentDashboard = () => {
         if (!regRegex.test(reg_no)) return alert("REGISTER NUMBER: Only Capital Letters and Numbers allowed!");
 
         try {
-            const res = await axios.post('http://127.0.0.1:8000/vouchers/book-slot', {
+            // URL Updated to Render
+            const res = await axios.post(`${API_BASE_URL}/vouchers/book-slot`, {
                 email: userEmail,
                 slot_id: selectedSlotId,
                 name: name,
@@ -65,6 +71,8 @@ const StudentDashboard = () => {
             alert(err.response?.data?.detail || "Booking failed!");
         }
     };
+
+    // --- (Remainder of your Return JSX and Styles exactly same) ---
 
     return (
         <>
