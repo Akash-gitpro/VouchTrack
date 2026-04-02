@@ -5,12 +5,10 @@ from sqlalchemy.orm import sessionmaker
 
 # --- DATABASE CONFIGURATION ---
 
-# PostgreSQL URL Format (Placeholders vatchurukkaen)
-# Namma RDS Endpoint kidaichathum 'YOUR_PASSWORD' and 'YOUR_RDS_ENDPOINT' replace pannuvom.
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:YOUR_PASSWORD@YOUR_RDS_ENDPOINT:5432/postgres"
+# Ippo namma real AWS RDS values-ah ulla poduvom
+# Format: postgresql://username:password@endpoint:port/dbname
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:VouchTrack123@vouchtrack-db.cx0yi0uuq0cn.eu-north-1.rds.amazonaws.com:5432/vouchtrack"
 
-# Engine create panrom. 
-# Note: PostgreSQL-ku 'connect_args' thevaiyillai, so adhai remove pannittom.
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
