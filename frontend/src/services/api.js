@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 // Backend URL (Namma FastAPI run aagura address)
-const API_URL = 'http://127.0.0.1:8000';
+// Pazhaya code:
+// const API_URL = "http://localhost:8000";
+
+// Pudhu code:
+const API_URL = "https://vouchtrack-backend.onrender.com";
 
 const api = axios.create({
     baseURL: API_URL,
